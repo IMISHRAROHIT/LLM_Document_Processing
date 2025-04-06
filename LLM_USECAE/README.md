@@ -1,68 +1,55 @@
-# LLM_Document_Processing/LLM_Document_Processing/README.md
+# LLM_Document_Processing# LLM Query Response Generator
 
-# LLM Document Processing
+This project provides an AWS Lambda function that generates responses to user queries based on text extracted from PDF files stored in an S3 bucket. The function uses OpenAI's GPT model to process the extracted text and return meaningful answers.
 
-This project is designed to extract text from PDF files stored in an S3 bucket using an AWS Lambda function. The extracted text is then uploaded to another S3 bucket.
+---
 
-## Project Structure
+## Features
 
-```
-LLM_Document_Processing
-├── Dockerfile
-├── requirements.txt
-├── LLM_Document_Processing
-│   ├── __init__.py
-│   └── lambda_extract.py
-└── README.md
-```
+- **S3 Integration**: Fetches extracted text from an S3 bucket.
+- **LLM Query Response**: Uses OpenAI's GPT model (e.g., `gpt-3.5-turbo`) to generate responses to user queries.
+- **API Gateway Integration**: Exposes the Lambda function as an API endpoint for querying the LLM.
+- **Error Handling**: Handles missing inputs, S3 errors, and LLM query failures gracefully.
 
-## Files
+---
 
-- **Dockerfile**: Contains instructions to build a Docker image for the application.
-- **requirements.txt**: Lists the Python dependencies required for the project.
-- **LLM_Document_Processing/lambda_extract.py**: Contains the main logic for the AWS Lambda function.
+## How It Works
 
-## Getting Started
+1. **Extracted Text in S3**:
+   - Text extracted from PDF files is stored in an S3 bucket.
 
-### Prerequisites
+2. **Query the LLM**:
+   - The user sends a query and the S3 key of the extracted text file to the API Gateway endpoint.
+   - The Lambda function fetches the extracted text from the S3 bucket and queries the LLM to generate a response.
 
-- Docker
-- AWS CLI
-- An AWS account with permissions to use ECR and Lambda
+3. **Response**:
+   - The Lambda function returns the LLM's response to the user.
 
-### Building the Docker Image
+---
 
-1. Navigate to the project directory:
-   ```
-   cd LLM_Document_Processing
-   ```
+## Prerequisites
 
-2. Build the Docker image:
-   ```
-   docker build -t your-image-name .
-   ```
+- **AWS Services**:
+  - S3 bucket for storing extracted text.
+  - Lambda function with appropriate IAM permissions.
+  - API Gateway for exposing the Lambda function as an API.
 
-### Pushing the Image to ECR
+- **Environment Variables**:
+  - `OPENAI_API_KEY`: Your OpenAI API key for querying the LLM.
 
-1. Authenticate Docker to your ECR registry:
-   ```
-   aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-region.amazonaws.com
-   ```
+- **Dependencies**:
+  - Python 3.8 or higher
+  - Required Python libraries (see `requirements.txt`):
+    ```plaintext
+    boto3
+    openai
+    ```
 
-2. Tag the Docker image:
-   ```
-   docker tag your-image-name:latest your-account-id.dkr.ecr.your-region.amazonaws.com/your-repo-name:latest
-   ```
+---
 
-3. Push the Docker image to ECR:
-   ```
-   docker push your-account-id.dkr.ecr.your-region.amazonaws.com/your-repo-name:latest
-   ```
+## Deployment
 
-### Deploying the Lambda Function
-
-After pushing the Docker image to ECR, you can create or update your AWS Lambda function to use the image from ECR.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### 1. Build the Docker Image
+Build the Docker image for the Lambda function:
+```bash
+docker build -t llm-query-response .
